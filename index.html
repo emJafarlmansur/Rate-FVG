@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rate Card & Cost Calculator</title>
+
+    <!-- 1. Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. React & Babel CDN -->
+    <script
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+      crossorigin
+    ></script>
+    <script
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+      crossorigin
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- 3. Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+  </head>
+  <!-- Background Reflected Gradient: Hitam (Kiri) -> Yellow-Gold (Tengah) -> Hitam (Kanan) -->
+  <body
+    class="min-h-screen bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-amber-500/20 via-slate-950 to-slate-950 text-slate-100 font-sans selection:bg-amber-500 selection:text-black"
+  >
+    <!-- Container Utama Tempat React Ditampilkan -->
+    <div id="root"></div>
+
+    <!-- Script React & JSX -->
+    <script type="text/babel">
+      const { useState, useEffect } = React;
+
+      function FreelanceRateCard() {
+        const [selectedPackage, setSelectedPackage] = useState("hybrid");
+        const [includeDrone, setIncludeDrone] = useState(true);
+        const [extraHours, setExtraHours] = useState(0);
+
+        useEffect(() => {
+          if (window.lucide) {
+            window.lucide.createIcons();
+          }
+        }, [selectedPackage, includeDrone, extraHours]);
+
+        const packages = {
+          photo: {
+            name: "Photography (FG)",
+            basePrice: 500000,
+            description:
+              "Fokus dokumentasi foto berkualitas tinggi untuk momen penting Anda.",
+            features: [
+              "Maksimal 3 Jam Coverage",
+              "All Unedited Files (Google Drive)",
+              "15 Edited Photos (Color Graded)",
+              "1 Fitur Operator Kamera",
+            ],
+          },
+          video: {
+            name: "Videography (VG)",
+            basePrice: 700000,
+            description:
+              "Dokumentasi video cinematic dengan alur cerita yang menarik.",
+            features: [
+              "Maksimal 3 Jam Coverage",
+              "1 Video Cinematic Highlight (1-2 Menit)",
+              "Resolusi Full HD / 4K",
+              "Audio Mixing & Color Grading",
+            ],
+          },
+          hybrid: {
+            name: "Hybrid Combo (VG + FG)",
+            basePrice: 1200000,
+            description:
+              "Solusi lengkap foto & video untuk hasil dokumentasi yang maksimal.",
+            features: [
+              "Maksimal 5 Jam Coverage",
+              "All Raw Files & Unedited Photos",
+              "25 Edited Photos",
+              "1 Video Cinematic Highlight (1-2 Menit)",
+              "Bebas Revisi Minor 2x",
+            ],
+          },
+        };
+
+        const currentBasePrice = packages[selectedPackage].basePrice;
+        const dronePrice = includeDrone ? 250000 : 0;
+        const extraHoursPrice = extraHours * 100000;
+        const totalPrice = currentBasePrice + dronePrice + extraHoursPrice;
+
+        const formatRupiah = (number) => {
+          return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            maximumFractionDigits: 0,
+          }).format(number);
+        };
+
+        const waNumber = "081216120922";
+        const waMessage = `Halo! Saya tertarik untuk booking jasa visual.%0A%0A- *Paket:* ${packages[selectedPackage].name}%0A- *Layanan Drone:* ${includeDrone ? "Ya" : "Tidak"}%0A- *Tambahan Waktu:* ${extraHours} Jam%0A- *Estimasi Biaya:* ${formatRupiah(totalPrice)}`;
+        const waLink = `https://wa.me/${waNumber}?text=${waMessage}`;
+
+        return (
+          <div class="min-h-screen bg-gradient-to-r from-slate-950 via-amber-500/15 to-slate-950 pb-12">
+            {/* HERO SECTION */}
+            <section class="relative py-16 px-6 text-center max-w-4xl mx-auto">
+              <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs px-3 py-1.5 rounded-full mb-6 backdrop-blur-sm">
+                <i data-lucide="compass" class="w-4 h-4"></i> Visual
+                Storytelling & Event Documentation
+              </div>
+              <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4 text-white drop-shadow-md">
+                Abadikan Momen Berharga Tanpa Khawatir Biaya Overbudget
+              </h1>
+              <p class="text-slate-300 text-sm md:text-base mb-8 max-w-2xl mx-auto">
+                Layanan Fotografi & Videografi profesional dengan struktur harga
+                transparan, tanpa biaya tersembunyi.
+              </p>
+            </section>
+
+            {/* PACKAGE SELECTION */}
+            <section class="max-w-6xl mx-auto px-6 mb-12">
+              <h2 class="text-xl font-bold text-center mb-8 text-slate-200">
+                1. Pilih Jenis Layanan
+              </h2>
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {Object.keys(packages).map((key) => {
+                  const pkg = packages[key];
+                  const isSelected = selectedPackage === key;
+                  return (
+                    <div
+                      key={key}
+                      onClick={() => setSelectedPackage(key)}
+                      class={`cursor-pointer rounded-2xl p-6 transition-all duration-300 border backdrop-blur-md ${
+                        isSelected
+                          ? "bg-slate-900/90 border-amber-500 shadow-xl shadow-amber-500/20 scale-105"
+                          : "bg-slate-900/60 border-slate-800/80 hover:border-amber-500/50"
+                      }`}
+                    >
+                      <div class="flex justify-between items-start mb-4">
+                        {key === "photo" && (
+                          <i
+                            data-lucide="camera"
+                            class="w-8 h-8 text-amber-400"
+                          ></i>
+                        )}
+                        {key === "video" && (
+                          <i
+                            data-lucide="video"
+                            class="w-8 h-8 text-amber-400"
+                          ></i>
+                        )}
+                        {key === "hybrid" && (
+                          <i
+                            data-lucide="layers"
+                            class="w-8 h-8 text-amber-400"
+                          ></i>
+                        )}
+                        {key === "hybrid" && (
+                          <span class="bg-amber-500 text-slate-950 font-bold text-[10px] px-2 py-0.5 rounded-full uppercase shadow-md">
+                            Recommended
+                          </span>
+                        )}
+                      </div>
+                      <h3 class="text-xl font-bold text-white mb-2">
+                        {pkg.name}
+                      </h3>
+                      <p class="text-slate-400 text-xs mb-4">
+                        {pkg.description}
+                      </p>
+                      <div class="text-2xl font-extrabold text-amber-400 mb-6">
+                        {formatRupiah(pkg.basePrice)}
+                      </div>
+                      <ul class="space-y-2 mb-6">
+                        {pkg.features.map((feature, idx) => (
+                          <li
+                            key={idx}
+                            class="flex items-center gap-2 text-xs text-slate-300"
+                          >
+                            <i
+                              data-lucide="check-circle-2"
+                              class="w-4 h-4 text-amber-500 shrink-0"
+                            ></i>
+                            {feature}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+
+            {/* CALCULATOR */}
+            <section class="max-w-3xl mx-auto px-6 mb-16">
+              <div class="bg-slate-900/80 backdrop-blur-md border border-amber-500/20 rounded-3xl p-6 md:p-8 shadow-2xl">
+                <h2 class="text-xl font-bold mb-6 text-slate-100 text-center">
+                  2. Atur Opsi Tambahan
+                </h2>
+
+                <div class="space-y-6">
+                  {/* Opsi Drone */}
+                  <div class="flex items-center justify-between p-4 bg-slate-950/60 rounded-xl border border-slate-800">
+                    <div>
+                      <h4 class="font-semibold text-slate-200 text-sm">
+                        Visual Udara / Drone Aerial
+                      </h4>
+                      <p class="text-slate-400 text-xs">
+                        Pengambilan angle cinematic menggunakan DJI Mini 2 SE
+                      </p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                      <span class="text-amber-400 font-semibold text-xs">
+                        + Rp250.000
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={includeDrone}
+                        onChange={(e) => setIncludeDrone(e.target.checked)}
+                        class="w-5 h-5 accent-amber-500 cursor-pointer rounded"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Opsi Overtime */}
+                  <div class="p-4 bg-slate-950/60 rounded-xl border border-slate-800">
+                    <div class="flex justify-between items-center mb-2">
+                      <div>
+                        <h4 class="font-semibold text-slate-200 text-sm">
+                          Tambahan Jam Kerja (Overtime)
+                        </h4>
+                        <p class="text-slate-400 text-xs">
+                          Rp100.000 / jam tambahan di lokasi
+                        </p>
+                      </div>
+                      <span class="text-amber-400 font-semibold text-sm">
+                        {extraHours} Jam
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="5"
+                      value={extraHours}
+                      onChange={(e) => setExtraHours(parseInt(e.target.value))}
+                      class="w-full accent-amber-500 bg-slate-800 rounded-lg cursor-pointer h-2"
+                    />
+                  </div>
+                </div>
+
+                {/* TOTAL & CTA */}
+                <div class="mt-8 pt-6 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <span class="text-slate-400 text-xs block">
+                      Estimasi Total Biaya
+                    </span>
+                    <span class="text-3xl font-extrabold text-white">
+                      {formatRupiah(totalPrice)}
+                    </span>
+                  </div>
+                  <a
+                    href={waLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-full md:w-auto inline-flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-6 py-3.5 rounded-xl transition-all duration-200 shadow-lg shadow-amber-500/20"
+                  >
+                    <i data-lucide="message-circle" class="w-5 h-5"></i>{" "}
+                    Konsultasi via WhatsApp{" "}
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                  </a>
+                </div>
+              </div>
+            </section>
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<FreelanceRateCard />);
+    </script>
+  </body>
+</html>
